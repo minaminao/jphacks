@@ -29,7 +29,7 @@ def v_to_wl(vowel):
 df_gms = {}
 sentence_to_freq = {}
 
-N = 2
+N = 7
 
 print("READ CSV START")
 for i in range(1, N + 1):
