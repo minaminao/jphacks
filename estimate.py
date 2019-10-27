@@ -29,7 +29,7 @@ def v_to_wl(vowel):
 df_gms = {}
 sentence_to_freq = {}
 
-N = 7
+N = 2
 
 print("READ CSV START")
 for i in range(1, N + 1):
@@ -56,7 +56,7 @@ def pakupaku(in_sentence_list):
         if out_sentence_list[i] == "":
             candidates = [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
             k = 2
-            out_sentence_list[i] = all_candidates[i][0]
+            out_sentence_list[i] = all_candidates[i][0][1]
         else:
             k = 1
             candidate_sentence = ""
@@ -98,6 +98,7 @@ def pakupaku(in_sentence_list):
 
             candidates = new_candidates
 
+    print(out_sentence_list)
     return ["".join(out_sentence_list)]
 
 if __name__ == "__main__":
