@@ -13,7 +13,6 @@ for line in df_ishowta.values:
     word, freq, _, _, vowel = line
     if not vowel in vowel_to_wordlist:
         vowel_to_wordlist[vowel] = []
-    # vowel_to_wordlist[vowel].append((freq,word))
     vowel_to_wordlist[vowel].append(word)
 
 for k in vowel_to_wordlist:
@@ -24,18 +23,17 @@ for k in vowel_to_wordlist:
 def v_to_wl(vowel):
     if vowel in vowel_to_wordlist:
         return vowel_to_wordlist[vowel]
-    return [(0, "")]
+    return [""]
 
 
 df_gms = {}
 sentence_to_freq = {}
 
-N = 4
+N = 7
 
 for i in range(1, N + 1):
-    # df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
-    df_gms[i] = pd.read_csv(
-        f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000', sep='\t', header=None)
+    df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
+    # df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000', sep='\t', header=None)
 
     sentence_to_freq[i] = {k: v for k, v in zip(df_gms[i][0], df_gms[i][1])}
 print("READ CSV")
