@@ -52,13 +52,13 @@ def pakupaku(in_sentence_list):
     out_sentence_list = ["" for i in range(W)]
 
     for i in range(W):
-        print(out_sentence_list)
-        k = 0
+        print("CURRENT OUT SENTENCE LIST:", out_sentence_list)
         if out_sentence_list[i] == "":
-            out_sentence_list[i] = can_words[i][0]
             candidates = [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
-            k = 1
+            k = 2
+            out_sentence_list[i] = all_candidates[i][0]
         else:
+            k = 1
             candidate_sentence = ""
             for j in range(i, W):
                 if out_sentence_list[j] == "":
@@ -68,7 +68,7 @@ def pakupaku(in_sentence_list):
             candidate_sentence = candidate_sentence[-1]
             candidates = [(0, candidate_sentence)]
 
-        for n in range(2, N + 1):
+        for n in range(k, N + 1):
             if i + n - 1 >= W:
                 break
             p = itertools.product(candidates, all_candidates[i + n - 1])
@@ -92,6 +92,8 @@ def pakupaku(in_sentence_list):
 
             if len(new_candidates) > 0:
                 out_sentence_list[i:i+n] = new_candidates[0][1].split(" ")
+            else:
+                break
 
 
             candidates = new_candidates
