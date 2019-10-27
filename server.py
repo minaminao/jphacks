@@ -68,11 +68,11 @@ def sendImage(sid, data):
 @sio.event
 def sendText(sid, data):
     print(data)
-    
+
     data = json.loads(data)
 
     # dataは、strを要素に持つリスト
-    response = requestPrediction(data['data'])
+    response = requestPrediction(data)
 
     # 返ってきた値を返す
     sio.emit('requestPrediction', json.dumps({'data': response}), room=sid)
