@@ -33,7 +33,7 @@ N = 7
 
 print("READ CSV START")
 for i in range(1, N + 1):
-    print(i+"/"+N)
+    print(str(i)+"/"+str(N))
     df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
     # df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000', sep='\t', header=None)
 
