@@ -67,6 +67,8 @@ def sendImage(sid, data):
 
 @sio.event
 def sendText(sid, data):
+    print(data)
+    
     data = json.loads(data)
 
     # dataは、strを要素に持つリスト
