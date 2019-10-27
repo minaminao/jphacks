@@ -63,7 +63,7 @@ def sendImage(sid, data):
         response = []
 
     # 返ってきた値を返す
-    sio.emit('requestPrediction', json.dumps({'data': response}), room=sid)
+    sio.emit('requestPrediction', json.dumps(response), room=sid)
 
 @sio.event
 def sendText(sid, data):
