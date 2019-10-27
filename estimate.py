@@ -31,12 +31,14 @@ sentence_to_freq = {}
 
 N = 7
 
+print("READ CSV START")
 for i in range(1, N + 1):
+    print(i+"/"+N)
     df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
     # df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000', sep='\t', header=None)
 
     sentence_to_freq[i] = {k: v for k, v in zip(df_gms[i][0], df_gms[i][1])}
-print("READ CSV")
+print("READ CSV FIN")
 
 def pakupaku(in_sentence_list):
     W = len(in_sentence_list)
@@ -81,15 +83,16 @@ def pakupaku(in_sentence_list):
 
         candidates = new_candidates
 
-    print("RESULT:", "".join(out_sentence_list))
+    return ["".join(out_sentence_list)]
+
+if __name__ == "__main__":
+    in_sentence_list = ["oo", "a", "ii", "eni", "eu", "e"]
+    res = pakupaku(in_sentence_list)[0]
+    print("RESULT:", res)
     print()
 
+    ipshell = InteractiveShellEmbed()
 
-in_sentence_list = ["oo", "a", "ii", "eni", "eu", "e"]
-pakupaku(in_sentence_list)
-
-ipshell = InteractiveShellEmbed()
-
-print('Usage: pakupaku(["oniia", "eai"])')
-print()
-ipshell()
+    print('Usage: pakupaku(["oniia", "eai"])')
+    print()
+    ipshell()
