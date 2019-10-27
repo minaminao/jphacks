@@ -41,21 +41,37 @@ print("READ CSV")
 def pakupaku(in_sentence_list):
     W = len(in_sentence_list)
 
-    can_words = [v_to_wl(vowel) for vowel in in_sentence_list] # e.g. ["え", "ぜ"]
+    can_words = [v_to_wl(vowel) for vowel in in_sentence_list] # e.g. [["え", "ぜ"]]
 
-    candidates = [ [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in words] for words in can_words]
+    all_candidates = [ [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in words] for words in can_words]
     for i in range(W):
-        candidates[i].sort(reverse=True)
+        all_candidates[i].sort(reverse=True)
+    
+    out_sentence_list = ["" for i in range(W)]
 
-    initial_candidates = candidates
-    out_sentence_list = [l[0][1] for l in candidates]
-
-    for n in range(2, N+1):
+    for i in range(W):
         print(out_sentence_list)
+        k = 0
+        if out_sentence_list[i] == "":
+            out_sentence_list[i] = can_words[i][0]
+            candidates = [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
+            k = 1
+        else:
+            candidate_sentence = ""
+            for j in range(i, W):
+                if out_sentence_list[j] == "":
+                    break
+                k += 1
+                candidate_sentence += out_sentence_list[j] + " "
+            candidate_sentence = candidate_sentence[-1]
+            candidates = [(0, candidate_sentence)]
 
-        new_candidates = [[] for i in range(W)]
-        for i in range(W - n + 1):
-            p = itertools.product(candidates[i], initial_candidates[i + n - 1])
+        for n in range(2, N + 1):
+            if i + n - 1 >= W:
+                break
+            p = itertools.product(candidates, all_candidates[i + n - 1])
+
+            new_candidates = []
 
             for t in p:
                 search_word = ""
@@ -66,20 +82,17 @@ def pakupaku(in_sentence_list):
                 if not search_word in sentence_to_freq[n]:
                     continue
 
-                new_candidates[i].append(
+                new_candidates.append(
                     (sentence_to_freq[n][search_word], search_word))
             
-            new_candidates[i].sort(reverse=True)
-            print(n, i, new_candidates[i][:5])
+            new_candidates.sort(reverse=True)
+            print(i, n, new_candidates[:5])
 
-            if len(new_candidates[i]) > 0:
-                if i == 0:
-                    out_sentence_list[0:n] = new_candidates[i][0][1].split(" ")
-                else:
-                    out_sentence_list[i+n -
-                                      1] = new_candidates[i][0][1].split(" ")[-1]
+            if len(new_candidates) > 0:
+                out_sentence_list[i:i+n] = new_candidates[0][1].split(" ")
 
-        candidates = new_candidates
+
+            candidates = new_candidates
 
     print("RESULT:", "".join(out_sentence_list))
     print()
