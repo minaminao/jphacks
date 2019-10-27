@@ -10,7 +10,7 @@ df_ishowta = pd.read_pickle(ishowta_f, compression=None)
 vowel_to_wordlist = {}
 
 for line in df_ishowta.values:
-    word, freq, _, vowel, _ = line
+    word, freq, _, _, vowel = line
     if not vowel in vowel_to_wordlist:
         vowel_to_wordlist[vowel] = []
     # vowel_to_wordlist[vowel].append((freq,word))
