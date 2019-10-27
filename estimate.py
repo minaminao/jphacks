@@ -65,7 +65,7 @@ def pakupaku(in_sentence_list):
                     break
                 k += 1
                 candidate_sentence += out_sentence_list[j] + " "
-            candidate_sentence = candidate_sentence[-1]
+            candidate_sentence = candidate_sentence[:-1]
             candidates = [(0, candidate_sentence)]
 
         for n in range(k, N + 1):
