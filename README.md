@@ -2,10 +2,16 @@
 
 ## Install N-gram corpus
 ```sh
-make install
+make setup
 ```
 
-## Estimate
+## Estimate (Python3)
 ```sh
 python estimate.py
+```
+
+## Estimate (C++)
+```sh
+make build
+./build/estimate
 ```
