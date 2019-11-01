@@ -1,6 +1,9 @@
 _
 data/nwc2010-ngrams
+data/ngram.dat
 .vscode
+build/*
 
+!.gitkeep
 .DS_Store
 */.DS_Store
