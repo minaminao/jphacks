@@ -35,10 +35,11 @@ print("READ CSV START")
 for i in range(1, N + 1):
     print(str(i)+"/"+str(N))
     df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
-    # df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000', sep='\t', header=None)
 
     sentence_to_freq[i] = {k: v for k, v in zip(df_gms[i][0], df_gms[i][1])}
 print("READ CSV FIN")
+
+MAX_C = 10
 
 def pakupaku(in_sentence_list):
     W = len(in_sentence_list)
@@ -49,66 +50,103 @@ def pakupaku(in_sentence_list):
     for i in range(W):
         all_candidates[i].sort(reverse=True)
     
-    out_sentence_list = ["" for i in range(W)]
+    candidate_out_sentence_list = [["" for i in range(W)]]
+ 
+    finished = []
 
     for i in range(W):
-        print("CURRENT OUT SENTENCE LIST:", out_sentence_list)
-        if out_sentence_list[i] == "":
-            candidates = [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
-            k = 2
-            out_sentence_list[i] = all_candidates[i][0][1]
-        else:
-            k = 1
-            candidate_sentence = ""
-            for j in range(i, W):
-                if out_sentence_list[j] == "":
-                    break
-                k += 1
-                candidate_sentence += out_sentence_list[j] + " "
-            candidate_sentence = candidate_sentence[:-1]
-            candidates = [(0, candidate_sentence)]
 
-        for n in range(k, N + 1):
-            if i + n - 1 >= W:
-                break
-            p = itertools.product(candidates, all_candidates[i + n - 1])
+        l = []
+        exists = set()
+        print("i", i)
 
-            new_candidates = []
+        for out_sentence_list in candidate_out_sentence_list:
+            print("CURRENT OUT SENTENCE LIST:", out_sentence_list)
 
-            for t in p:
-                search_word = ""
-                for x in t:
-                    search_word += x[1] + " "
-                search_word = search_word[:-1]
-
-                if not search_word in sentence_to_freq[n]:
-                    continue
-
-                new_candidates.append(
-                    (sentence_to_freq[n][search_word], search_word))
-            
-            new_candidates.sort(reverse=True)
-            print(i, n, new_candidates[:5])
-
-            if len(new_candidates) > 0:
-                out_sentence_list[i:i+n] = new_candidates[0][1].split(" ")
+            if out_sentence_list[i] == "":
+                candidates = [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
+                k = 1
             else:
-                break
+                k = 1
+                candidate_sentence = ""
+                for j in range(i, W):
+                    if out_sentence_list[j] == "":
+                        break
+                    k += 1
+                    candidate_sentence += out_sentence_list[j] + " "
+                candidate_sentence = candidate_sentence[:-1]
+                candidates = [(0, candidate_sentence)]
 
+            for n in range(k, min(N + 1, W - i + 1)):
+                if n == 1:
+                    p = []
+                    for c in candidates:
+                        p.append([c])
+                else:
+                    p = itertools.product(candidates, all_candidates[i + n - 1])
+     
+                candidates = []
+                new_candidates = []
 
-            candidates = new_candidates
+                for t in p:
+                    search_word = ""
+                    for x in t:
+                        search_word += x[1] + " "
+                    search_word = search_word[:-1]
 
-    print(out_sentence_list)
-    return ["".join(out_sentence_list)]
+                    if not search_word in sentence_to_freq[n]:
+                        continue
+
+                    new_candidates.append(
+                        (sentence_to_freq[n][search_word], search_word))
+                
+                new_candidates.sort(reverse=True)
+                print(i, n, new_candidates[:5])
+
+                if len(new_candidates) == 0:
+                    break
+
+                candidates = new_candidates
+            
+            if len(new_candidates) > 0:
+                candidates = new_candidates
+
+            for j in range(min(MAX_C, len(candidates))):
+                t = out_sentence_list.copy()
+                m = len(candidates[j][1].split(" "))
+                t[i:i+m] = candidates[j][1].split(" ")
+                if candidates[j][0] in exists:
+                    continue
+                exists.add(candidates[j][0])
+                l.append((candidates[j][0], t))
+
+        l.sort(reverse=True)
+        print(l)
+
+        candidate_out_sentence_list = []
+        for j in range(min(MAX_C, len(l))):
+            if l[j][1][-1] == "":
+                candidate_out_sentence_list.append(l[j][1])
+            else:
+                finished.append("".join(l[j][1]))
+
+        print("finished", finished)
+        print("can", candidate_out_sentence_list)
+
+        if len(finished) >= MAX_C:
+            break
+    
+    return finished[:MAX_C]
 
 if __name__ == "__main__":
     in_sentence_list = ["oo", "a", "ii", "eni", "eu", "e"]
-    res = pakupaku(in_sentence_list)[0]
-    print("RESULT:", res)
+    print("RESULT:", pakupaku(in_sentence_list))
     print()
+
+    print('Usage: eo o io a')
+    while True:
+        s = input()
+        print(pakupaku(s.split(" ")))
 
     ipshell = InteractiveShellEmbed()
-
-    print('Usage: pakupaku(["oniia", "eai"])')
-    print()
     ipshell()
