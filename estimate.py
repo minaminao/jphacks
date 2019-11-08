@@ -1,3 +1,4 @@
+import os
 import itertools
 import pickle
 import pandas as pd
@@ -30,28 +31,39 @@ df_gms = {}
 sentence_to_freq = {}
 
 N = 7
-
 print("READ CSV START")
 for i in range(1, N + 1):
     print(str(i)+"/"+str(N))
-    df_gms[i] = pd.read_csv(f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
+
+    pickle_file_name = f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.pickle'
+
+    if os.path.exists(pickle_file_name):
+        df_gms[i] = pd.read_pickle(pickle_file_name)
+    else:
+        df_gms[i] = pd.read_csv(
+            f'data/nwc2010-ngrams/word/over999/{i}gms/{i}gm-0000.xz', sep='\t', header=None)
+        df_gms[i].to_pickle(pickle_file_name)
 
     sentence_to_freq[i] = {k: v for k, v in zip(df_gms[i][0], df_gms[i][1])}
+
 print("READ CSV FIN")
 
 MAX_C = 10
 
+
 def pakupaku(in_sentence_list):
     W = len(in_sentence_list)
 
-    can_words = [v_to_wl(vowel) for vowel in in_sentence_list] # e.g. [["え", "ぜ"]]
+    can_words = [v_to_wl(vowel)
+                 for vowel in in_sentence_list]  # e.g. [["え", "ぜ"]]
 
-    all_candidates = [ [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in words] for words in can_words]
+    all_candidates = [[(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s)
+                       for s in words] for words in can_words]
     for i in range(W):
         all_candidates[i].sort(reverse=True)
-    
+
     candidate_out_sentence_list = [["" for i in range(W)]]
- 
+
     finished = []
 
     for i in range(W):
@@ -64,7 +76,8 @@ def pakupaku(in_sentence_list):
             print("CURRENT OUT SENTENCE LIST:", out_sentence_list)
 
             if out_sentence_list[i] == "":
-                candidates = [(sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
+                candidates = [
+                    (sentence_to_freq[1][s] if s in sentence_to_freq[1] else 0, s) for s in can_words[i]]
                 k = 1
             else:
                 k = 1
@@ -83,9 +96,9 @@ def pakupaku(in_sentence_list):
                     for c in candidates:
                         p.append([c])
                 else:
-                    p = itertools.product(candidates, all_candidates[i + n - 1])
-     
-                candidates = []
+                    p = itertools.product(
+                        candidates, all_candidates[i + n - 1])
+
                 new_candidates = []
 
                 for t in p:
@@ -99,7 +112,7 @@ def pakupaku(in_sentence_list):
 
                     new_candidates.append(
                         (sentence_to_freq[n][search_word], search_word))
-                
+
                 new_candidates.sort(reverse=True)
                 print(i, n, new_candidates[:5])
 
@@ -107,7 +120,7 @@ def pakupaku(in_sentence_list):
                     break
 
                 candidates = new_candidates
-            
+
             if len(new_candidates) > 0:
                 candidates = new_candidates
 
@@ -135,8 +148,9 @@ def pakupaku(in_sentence_list):
 
         if len(finished) >= MAX_C:
             break
-    
+
     return finished[:MAX_C]
+
 
 if __name__ == "__main__":
     in_sentence_list = ["oo", "a", "ii", "eni", "eu", "e"]
